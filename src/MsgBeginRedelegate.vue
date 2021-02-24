@@ -1,5 +1,6 @@
 <template>
   <div>
+    <h3>Redelegate</h3>
     <div>
       From validator address: <input v-model.trim="fromValidator">
     </div>

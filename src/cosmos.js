@@ -56,12 +56,13 @@ export function prepareSignObject({
   memo = '',
   denom = 'nanolike',
 }) {
-  const gasAmount = gas.toString();
-  const feeAmount = (gas * gasPrice).toString();
+  const gasAmount = Math.ceil(gas);
+  const feeInNanolike = Math.ceil(gasAmount * gasPrice);
+  const feeAmount = (feeInNanolike === 0) ? [] : [{ denom, amount: feeInNanolike.toString() }];
   return {
     fee: {
-      amount: [{ denom, amount: feeAmount }],
-      gas: gasAmount,
+      amount: feeAmount,
+      gas: gasAmount.toString(),
     },
     msgs,
     chain_id: chainID,

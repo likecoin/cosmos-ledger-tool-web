@@ -1,7 +1,8 @@
 <template>
   <div>
+    <h3>Undelegate</h3>
     <div>
-      validator address: <input v-model.trim="validator">
+      Validator address: <input v-model.trim="validator">
     </div>
     <div>
       Amount: <input v-model.trim.number="amount"> LIKE

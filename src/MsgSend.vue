@@ -1,5 +1,6 @@
 <template>
   <div>
+    <h3>Send LIKE</h3>
     <div>
       Send to address: <input v-model.trim="to">
     </div>

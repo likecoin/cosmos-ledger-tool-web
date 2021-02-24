@@ -1,7 +1,8 @@
 <template>
   <div>
+    <h3>Withdraw Rewards</h3>
     <div>
-      validator address: <input v-model.trim="validator">
+      Validator address: <input v-model.trim="validator">
     </div>
     <button @click="addMsg">Add msg</button>
   </div>

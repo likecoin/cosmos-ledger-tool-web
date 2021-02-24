@@ -53,6 +53,7 @@ export const store = createStore({
       commit(INIT_COSMOS_LEDGER_APP, app);
     },
     async [FETCH_COSMOS_INFO]({ state, commit, dispatch }, ledgerIndex) {
+      commit(COMMIT_CLEAR_MSGS);
       if (!state.cosmosLedgerApp) {
         await dispatch(INIT_COSMOS_LEDGER_APP);
       }

@@ -1,5 +1,6 @@
 <template>
   <div>
+    <h3>Msg List</h3>
     <ul>
       <li v-for="(msg, i) in msgs" v-bind:key="msg">
         <button @click="removeMsg(i)">X</button>

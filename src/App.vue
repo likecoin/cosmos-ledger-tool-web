@@ -1,29 +1,62 @@
 <template>
-  <div>
+  <div class="account-info">
     <AccountInfo />
   </div>
-  <div>
+  <div class="select-function">
     Select function: 
     <button @click="select('MsgSend')">Send LIKE</button>
-    <button @click="select('MsgDelegate')">Delegate to validator</button>
-    <button @click="select('MsgBeginRedelegate')">Redelegate between validators</button>
-    <button @click="select('MsgUndelegate')">Undelegate from validator</button>
-    <button @click="select('MsgWithdrawDelegationReward')">Withdraw delegation reward</button>
+    <button @click="select('MsgDelegate')">Delegate</button>
+    <button @click="select('MsgBeginRedelegate')">Redelegate</button>
+    <button @click="select('MsgUndelegate')">Undelegate</button>
+    <button @click="select('MsgWithdrawDelegationReward')">Withdraw</button>
   </div>
-  <div>
+  <div class="msg-input">
     <MsgSend v-if="selected === 'MsgSend'" />
     <MsgDelegate v-if="selected === 'MsgDelegate'" />
     <MsgBeginRedelegate v-if="selected === 'MsgBeginRedelegate'" />
     <MsgUndelegate v-if="selected === 'MsgUndelegate'" />
     <MsgWithdrawDelegationReward v-if="selected === 'MsgWithdrawDelegationReward'" />
   </div>
-  <div>
+  <div class="msg-list">
     <Msgs />
   </div>
-  <div>
+  <div class="tx-info">
     <Tx />
   </div>
 </template>
+
+<style scoped>
+.account-info {
+  margin: 5px 0 5px 0;
+  border-style: solid;
+  border-width: 1px;
+}
+
+.select-function {
+  margin: 5px 0 5px 0;
+  border-style: solid;
+  border-width: 1px;
+}
+
+.msg-input {
+  margin: 5px 0 5px 0;
+  border-style: solid;
+  border-width: 1px;
+  height: 10rem;
+}
+
+.msg-list {
+  margin: 5px 0 5px 0;
+  border-style: solid;
+  border-width: 1px;
+}
+
+.tx-info {
+  margin: 5px 0 5px 0;
+  border-style: solid;
+  border-width: 1px;
+}
+</style>
 
 <script>
 import AccountInfo from './AccountInfo.vue';

@@ -1,5 +1,6 @@
 <template>
   <div>
+    <h2>Tx Info</h2>
     <div>
       Memo (optional): <input v-model="memo">
     </div>
@@ -12,7 +13,6 @@
     <div>
       Fee: {{fee}}
     </div>
-    <button @click="prepareSignObject">Prepare sign object</button>
     <div>
       Sign object: {{signObject}}
     </div>
@@ -22,7 +22,7 @@
     </div>
     <button @click="broadcastTx">Confirm and Send</button>
     <div>
-      TxHash: {{txHash}}
+      TxHash: <a :href="txLink" target="_blank">{{txHash}}</a>
     </div>
     <div>
       Log message: {{log}}
@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useStore } from 'vuex';
 import { LCD_ENDPOINT, CHAIN_ID } from './config.js';
 import * as Cosmos from './cosmos.js';
@@ -40,18 +40,17 @@ export default {
   setup() {
     const store = useStore();
     const memo = ref('');
-    const gas = ref(200000);
+    const gas = ref(0);
     const recommendedGas = computed(() => Cosmos.computeTotalGas(store.state.msgs));
+    watch(recommendedGas, (recommendedGas) => {
+      gas.value = recommendedGas;
+    });
     const gasPrice = ref(100);
     const fee = computed(() => `${gas.value * gasPrice.value / 1e9} LIKE`);
-    const signObject = ref({});
-    const signature = ref('');
-    const txHash = ref('');
-    const log = ref(null);
-    const prepareSignObject = () => {
+    const signObject = computed(() => {
       const { msgs } = store.state;
       const { accountNumber, sequence } = store.state.accountInfo;
-      signObject.value = Cosmos.prepareSignObject({
+      return Cosmos.prepareSignObject({
         msgs,
         chainID: CHAIN_ID,
         accountNumber,
@@ -60,7 +59,11 @@ export default {
         gasPrice: gasPrice.value,
         memo: memo.value,
       });
-    };
+    });
+    const signature = ref('');
+    const txHash = ref('');
+    const txLink = computed(() => `https://likecoin.bigdipper.live/transactions/${txHash.value}?new`);
+    const log = ref(null);
     const sign = async () => {
       const { cosmosLedgerApp } = store.state;
       const { ledgerPath } =  store.state.addressInfo;
@@ -85,8 +88,8 @@ export default {
       signObject,
       signature,
       txHash,
+      txLink,
       log,
-      prepareSignObject,
       sign,
       broadcastTx,
     };
