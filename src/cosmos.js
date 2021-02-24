@@ -21,7 +21,7 @@ export async function readAddressInfo(cosmosLedgerApp, {
   return {
     pubKey: {
       type: 'tendermint/PubKeySecp256k1',
-      value: Base64.encode(compressed_pk),
+      value: Base64.fromUint8Array(compressed_pk),
     },
     address,
   };
@@ -73,7 +73,6 @@ export function prepareSignObject({
 
 export async function sign(cosmosLedgerApp, signObj, path = getLedgerPath(0)) {
   const signMsg = jsonStringify(signObj);
-  console.log(signMsg);
   const res = await cosmosLedgerApp.sign(path, signMsg);
   return sigDerToRaw(res.signature);
 }
@@ -184,7 +183,6 @@ export function getLedgerPath(index) {
 
 function sigDerToRaw(sig) {
   if (sig.length === 64) {
-    console.log(rawSig);
     return Base64.fromUint8Array(sig);
   }
   const rawSig = new Uint8Array(64);

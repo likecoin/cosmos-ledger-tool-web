@@ -15,7 +15,7 @@
     <div>
       Balance: {{balance}}
     </div>
-    <button @click="readAccount">re-read account</button>
+    <button @click="fetchCosmosInfo">re-read account</button>
   </div>
 </template>
 
@@ -40,7 +40,6 @@ export default {
   setup() {
     const store = useStore();
     let ledgerIndex = ref(0);
-    console.log(ledgerIndex);
     return {
       ledgerIndex,
       address: computed(() => store.state.addressInfo.address),
