@@ -23,6 +23,7 @@ export const store = createStore({
         accountNumber: '0',
         sequence: '0',
         coins: [],
+        delegations: [],
       },
       msgs: [],
     };
@@ -60,8 +61,11 @@ export const store = createStore({
       const ledgerPath = Cosmos.getLedgerPath(ledgerIndex);
       const addressInfo = await Cosmos.readAddressInfo(state.cosmosLedgerApp, { path: ledgerPath });
       commit(COMMIT_ADDRESS_INFO, { ...addressInfo, ledgerPath });
-      const accountInfo = await Cosmos.fetchAccountInfo(LCD_ENDPOINT, state.addressInfo.address)
-      commit(COMMIT_ACCOUNT_INFO, accountInfo);
+      const [basicAccountInfo, delegations] = await Promise.all([
+        Cosmos.fetchBasicAccountInfo(LCD_ENDPOINT, state.addressInfo.address),
+        Cosmos.fetchDelegationInfo(LCD_ENDPOINT, state.addressInfo.address),
+      ]);
+      commit(COMMIT_ACCOUNT_INFO, { ...basicAccountInfo, delegations });
     },
   },
 });

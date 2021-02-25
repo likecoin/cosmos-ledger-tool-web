@@ -16,6 +16,14 @@
     <div>
       Balance: {{balance}}
     </div>
+    <div>
+      Delegations:
+      <ul>
+        <li v-for="delegation in delegations" v-bind:key="delegation.id">
+          {{delegation}}
+        </li>
+      </ul>
+    </div>
     <button @click="fetchCosmosInfo">re-read account</button>
   </div>
 </template>
@@ -40,13 +48,16 @@ function prettyBalance(coins) {
 export default {
   setup() {
     const store = useStore();
-    let ledgerIndex = ref(0);
+    const ledgerIndex = ref(0);
     return {
       ledgerIndex,
       address: computed(() => store.state.addressInfo.address),
       accountNumber: computed(() => store.state.accountInfo.accountNumber),
       balance: computed(() => prettyBalance(store.state.accountInfo.coins)),
       sequence: computed(() => store.state.accountInfo.sequence),
+      delegations: computed(() => store.state.accountInfo.delegations.map((delegation) => (
+        { ...delegation, balance: `${delegation.balance / 1e9} LIKE` }
+      ))),
       fetchCosmosInfo: () => store.dispatch(FETCH_COSMOS_INFO, Number.parseInt(ledgerIndex.value, 10)),
     };
   },

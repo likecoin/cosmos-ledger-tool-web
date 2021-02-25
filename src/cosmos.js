@@ -27,12 +27,25 @@ export async function readAddressInfo(cosmosLedgerApp, {
   };
 }
 
-export async function fetchAccountInfo(endpoint, address) {
+export async function fetchBasicAccountInfo(endpoint, address) {
   const res = await axios.get(`/auth/accounts/${address}`, {
     baseURL: endpoint,
   });
   const { coins, account_number: accountNumber, sequence } = res.data.result.value;
   return { address, coins, accountNumber, sequence };
+}
+
+export async function fetchDelegationInfo(endpoint, delegator) {
+  const res = await axios.get(`staking/delegators/${delegator}/delegations`, {
+    baseURL: endpoint,
+  });
+  return res.data.result.map((delegation) => {
+    const { validator_address: validator, balance } = delegation;
+    return {
+      validator,
+      balance: Number.parseInt(balance),
+    };
+  });
 }
 
 export function computeTotalGas(msgs) {
