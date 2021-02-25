@@ -25,7 +25,10 @@
       TxHash: <a :href="txLink" target="_blank">{{txHash}}</a>
     </div>
     <div>
-      Log message: {{log}}
+      Basic valdiation log: {{basicValidationLog}}
+    </div>
+    <div>
+      Final transaction status and result: {{txResult}}
     </div>
   </div>
 </template>
@@ -35,6 +38,7 @@ import { ref, computed, watch } from 'vue';
 import { useStore } from 'vuex';
 import { LCD_ENDPOINT, CHAIN_ID } from './config.js';
 import * as Cosmos from './cosmos.js';
+import { FETCH_COSMOS_INFO } from './store.js';
 
 export default {
   setup() {
@@ -63,21 +67,34 @@ export default {
     const signature = ref('');
     const txHash = ref('');
     const txLink = computed(() => `https://likecoin.bigdipper.live/transactions/${txHash.value}?new`);
-    const log = ref(null);
+    const basicValidationLog = ref(null);
     const sign = async () => {
       const { cosmosLedgerApp } = store.state;
       const { ledgerPath } =  store.state.addressInfo;
       signature.value = await Cosmos.sign(cosmosLedgerApp, signObject.value, ledgerPath)
     }
+    const txResult = ref(null);
     const broadcastTx = async () => {
-      const resData = await Cosmos.broadcastTx({
+      const { txHash: returnedTxHash, log: validationLog, success: validationOk } = await Cosmos.broadcastTx({
         signObject: signObject.value,
         signature: signature.value,
         pubKey: store.state.addressInfo.pubKey,
         endpoint: LCD_ENDPOINT,
       });
-      txHash.value = resData.txhash
-      log.value = resData.raw_log;
+      basicValidationLog.value = validationLog;
+      if (!validationOk) {
+        txResult.value = 'Did not pass validation';
+        return;
+      }
+      txHash.value = returnedTxHash;
+      txResult.value = 'Sent, pending';
+      const { success, log: finalLog } = await Cosmos.pollTxResult(LCD_ENDPOINT, returnedTxHash);
+      if (success) {
+        txResult.value = 'Included, success';
+      } else {
+        txResult.value = `Included, failed: ${finalLog}`;
+      }
+      store.dispatch(FETCH_COSMOS_INFO);
     }
     return {
       memo,
@@ -89,9 +106,10 @@ export default {
       signature,
       txHash,
       txLink,
-      log,
+      basicValidationLog,
       sign,
       broadcastTx,
+      txResult,
     };
   },
 };

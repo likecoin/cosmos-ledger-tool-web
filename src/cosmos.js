@@ -183,7 +183,38 @@ export async function broadcastTx({ signObject, signature, pubKey, endpoint }) {
     baseURL: endpoint,
   });
   console.log(res);
-  return res.data;
+  const log = JSON.parse(res.data.raw_log);
+  const passedBasicValidation = (log) => {
+    if (!Array.isArray(log)) {
+      return false;
+    }
+    return log.every(msg => msg.success);
+  };
+  const success = passedBasicValidation(log);
+  return { txHash: res.data.txhash, log, success };
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export async function pollTxResult(endpoint, txHash) {
+  for (;;) {
+    try {
+      const res = await axios.get(`txs/${txHash}`, {
+        baseURL: endpoint,
+      });
+      for (let msg of res.data.logs) {
+        if (!msg.success) {
+          return { success: false, log: msg.log };
+        }
+      }
+      return { success: true };
+    } catch (err) {
+      console.log(err);
+    }
+    await sleep(6000);
+  }
 }
 
 export async function initCosmosLedgerApp() {
