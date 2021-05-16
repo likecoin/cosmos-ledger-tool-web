@@ -5,7 +5,7 @@
       path: 44/118/<input v-model.number="ledgerIndex0" type="number">/<input v-model.number="ledgerIndex1" type="number">/<input v-model.number="ledgerIndex2" type="number">
     </div>
     <div>
-      Address: {{address}}<button @click="fetchCosmosInfo">Read address</button>
+      Address: {{address}}<button @click="updateLedgerPath">Read address</button>
     </div>
     <div>
       Account number: {{accountNumber}}
@@ -24,14 +24,14 @@
         </li>
       </ul>
     </div>
-    <button @click="fetchCosmosInfo">re-read account</button>
+    <button @click="updateLedgerPath">re-read account</button>
   </div>
 </template>
 
 <script>
 import { ref, computed } from 'vue';
 import { useStore } from 'vuex';
-import { FETCH_COSMOS_INFO } from './store.js';
+import { UPDATE_LEDGER_PATH } from './store.js';
 import { getLedgerPath } from './cosmos.js';
 
 function prettyBalance(coins) {
@@ -63,7 +63,7 @@ export default {
       delegations: computed(() => store.state.accountInfo.delegations.map((delegation) => (
         { ...delegation, balance: `${delegation.balance / 1e9} LIKE` }
       ))),
-      fetchCosmosInfo: () => store.dispatch(FETCH_COSMOS_INFO, getLedgerPath(ledgerIndex0.value, ledgerIndex1.value, ledgerIndex2.value)),
+      updateLedgerPath: () => store.dispatch(UPDATE_LEDGER_PATH, getLedgerPath(ledgerIndex0.value, ledgerIndex1.value, ledgerIndex2.value)),
     };
   },
 };

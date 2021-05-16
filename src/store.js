@@ -4,6 +4,7 @@ import * as Cosmos from './cosmos.js';
 
 export const INIT_COSMOS_LEDGER_APP = 'INIT_COSMOS_LEDGER_APP';
 export const COMMIT_ADDRESS_INFO = 'COMMIT_ADDRESS_INFO';
+export const UPDATE_LEDGER_PATH = 'UPDATE_LEDGER_PATH';
 export const FETCH_COSMOS_INFO =  'FETCH_COSMOS_INFO';
 export const COMMIT_ACCOUNT_INFO = 'COMMIT_ACCOUNT_INFO';
 export const COMMIT_ADD_MSG = 'COMMIT_ADD_MSG';
@@ -15,7 +16,7 @@ export const store = createStore({
     return {
       cosmosLedgerApp: null,
       addressInfo: {
-        ledgerPath: Cosmos.getLedgerPath(0),
+        ledgerPath: Cosmos.DEFAULT_PATH,
         address: '',
         pubKey: {},
       },
@@ -53,13 +54,16 @@ export const store = createStore({
       const app = await Cosmos.initCosmosLedgerApp();
       commit(INIT_COSMOS_LEDGER_APP, app);
     },
-    async [FETCH_COSMOS_INFO]({ state, commit, dispatch }, ledgerPath) {
+    async [UPDATE_LEDGER_PATH]({ state, commit, dispatch }, ledgerPath) {
       commit(COMMIT_CLEAR_MSGS);
       if (!state.cosmosLedgerApp) {
         await dispatch(INIT_COSMOS_LEDGER_APP);
       }
       const addressInfo = await Cosmos.readAddressInfo(state.cosmosLedgerApp, { path: ledgerPath });
       commit(COMMIT_ADDRESS_INFO, { ...addressInfo, ledgerPath });
+      await dispatch(FETCH_COSMOS_INFO);
+    },
+    async [FETCH_COSMOS_INFO]({ state, commit }) {
       const [basicAccountInfo, delegations] = await Promise.all([
         Cosmos.fetchBasicAccountInfo(LCD_ENDPOINT, state.addressInfo.address),
         Cosmos.fetchDelegationInfo(LCD_ENDPOINT, state.addressInfo.address),

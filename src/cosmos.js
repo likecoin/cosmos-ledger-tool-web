@@ -8,8 +8,10 @@ import { bech32 } from 'bech32';
 import axios from 'axios';
 import jsonStringify from 'fast-json-stable-stringify';
 
+export const DEFAULT_PATH = [44, 118, 0, 0, 0];
+
 export async function readAddressInfo(cosmosLedgerApp, {
-  path = getLedgerPath(0),
+  path = DEFAULT_PATH,
   prefix = 'cosmos',
 }) {
   const { compressed_pk } = await cosmosLedgerApp.publicKey(path);
@@ -85,7 +87,7 @@ export function prepareSignObject({
   };
 }
 
-export async function sign(cosmosLedgerApp, signObj, path = getLedgerPath(0)) {
+export async function sign(cosmosLedgerApp, signObj, path = DEFAULT_PATH) {
   const signMsg = jsonStringify(signObj);
   const res = await cosmosLedgerApp.sign(path, signMsg);
   return sigDerToRaw(res.signature);
