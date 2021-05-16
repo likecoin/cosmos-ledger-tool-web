@@ -1,8 +1,8 @@
 <template>
   <div>
     <h2>Account Info</h2>
-    <div>
-      path: 44/118/0/0/<input v-model="ledgerIndex">
+    <div class="path-container">
+      path: 44/118/<input v-model.number="ledgerIndex0" type="number">/<input v-model.number="ledgerIndex1" type="number">/<input v-model.number="ledgerIndex2" type="number">
     </div>
     <div>
       Address: {{address}}<button @click="fetchCosmosInfo">Read address</button>
@@ -32,6 +32,7 @@
 import { ref, computed } from 'vue';
 import { useStore } from 'vuex';
 import { FETCH_COSMOS_INFO } from './store.js';
+import { getLedgerPath } from './cosmos.js';
 
 function prettyBalance(coins) {
   if (!coins) {
@@ -48,9 +49,13 @@ function prettyBalance(coins) {
 export default {
   setup() {
     const store = useStore();
-    const ledgerIndex = ref(0);
+    const ledgerIndex0 = ref(0);
+    const ledgerIndex1 = ref(0);
+    const ledgerIndex2 = ref(0);
     return {
-      ledgerIndex,
+      ledgerIndex0,
+      ledgerIndex1,
+      ledgerIndex2,
       address: computed(() => store.state.addressInfo.address),
       accountNumber: computed(() => store.state.accountInfo.accountNumber),
       balance: computed(() => prettyBalance(store.state.accountInfo.coins)),
@@ -58,10 +63,15 @@ export default {
       delegations: computed(() => store.state.accountInfo.delegations.map((delegation) => (
         { ...delegation, balance: `${delegation.balance / 1e9} LIKE` }
       ))),
-      fetchCosmosInfo: () => store.dispatch(FETCH_COSMOS_INFO, Number.parseInt(ledgerIndex.value, 10)),
+      fetchCosmosInfo: () => store.dispatch(FETCH_COSMOS_INFO, getLedgerPath(ledgerIndex0.value, ledgerIndex1.value, ledgerIndex2.value)),
     };
   },
 };
 
 </script>
 
+<style scoped>
+  .path-container input {
+    width: 30px;
+  }
+</style>

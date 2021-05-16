@@ -53,12 +53,11 @@ export const store = createStore({
       const app = await Cosmos.initCosmosLedgerApp();
       commit(INIT_COSMOS_LEDGER_APP, app);
     },
-    async [FETCH_COSMOS_INFO]({ state, commit, dispatch }, ledgerIndex) {
+    async [FETCH_COSMOS_INFO]({ state, commit, dispatch }, ledgerPath) {
       commit(COMMIT_CLEAR_MSGS);
       if (!state.cosmosLedgerApp) {
         await dispatch(INIT_COSMOS_LEDGER_APP);
       }
-      const ledgerPath = Cosmos.getLedgerPath(ledgerIndex);
       const addressInfo = await Cosmos.readAddressInfo(state.cosmosLedgerApp, { path: ledgerPath });
       commit(COMMIT_ADDRESS_INFO, { ...addressInfo, ledgerPath });
       const [basicAccountInfo, delegations] = await Promise.all([

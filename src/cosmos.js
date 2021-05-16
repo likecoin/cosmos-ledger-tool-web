@@ -222,8 +222,9 @@ export async function initCosmosLedgerApp() {
   return new CosmosApp(transport);
 }
 
-export function getLedgerPath(index) {
-  return [44, 118, 0, 0, index];
+export function getLedgerPath(...indices) {
+  console.log([44, 118, ...indices])
+  return [44, 118, ...indices];
 }
 
 function sigDerToRaw(sig) {
