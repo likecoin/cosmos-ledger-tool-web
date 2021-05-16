@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3>Dedelegate</h3>
+    <h3>Delegate</h3>
     <div>
       Validator address: <input v-model.trim="validator">
     </div>
