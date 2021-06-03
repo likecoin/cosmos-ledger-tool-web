@@ -8,7 +8,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "@ledgerhq/hw-transport-webusb": "^5.43.0",
+    "@ledgerhq/hw-transport-webusb": "^5.53.0",
     "axios": "^0.21.1",
     "bech32": "^2.0.0",
     "core-js": "^3.6.5",
