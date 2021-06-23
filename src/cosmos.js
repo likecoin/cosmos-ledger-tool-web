@@ -54,7 +54,7 @@ export function computeTotalGas(msgs) {
   const GAS = {
     'cosmos-sdk/MsgSend': 44000,
     'cosmos-sdk/MsgDelegate': 135000,
-    'cosmos-sdk/MsgBeginRedelegate': 230000,
+    'cosmos-sdk/MsgBeginRedelegate': 245000,
     'cosmos-sdk/MsgUndelegate': 155000,
     'cosmos-sdk/MsgWithdrawDelegationReward': 90000,
   };
