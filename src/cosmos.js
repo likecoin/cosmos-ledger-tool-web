@@ -30,10 +30,18 @@ export async function readAddressInfo(cosmosLedgerApp, {
 }
 
 export async function fetchBasicAccountInfo(endpoint, address) {
-  const res = await axios.get(`/auth/accounts/${address}`, {
-    baseURL: endpoint,
-  });
-  const { coins, account_number: accountNumber, sequence } = res.data.result.value;
+  const [authResult, bankResult] = await Promise.all([
+    axios.get(`/auth/accounts/${address}`, {
+      baseURL: endpoint,
+    }),
+    axios.get(`/bank/balances/${address}`, {
+      baseURL: endpoint,
+    }),
+  ]);
+  const { account_number: accountNumber, sequence = '0' } = authResult.data.result.value;
+  const coins = bankResult.data.result;
+  console.log(authResult.data);
+  console.log({ address, coins, accountNumber, sequence })
   return { address, coins, accountNumber, sequence };
 }
 
@@ -41,8 +49,9 @@ export async function fetchDelegationInfo(endpoint, delegator) {
   const res = await axios.get(`staking/delegators/${delegator}/delegations`, {
     baseURL: endpoint,
   });
-  return res.data.result.map((delegation) => {
-    const { validator_address: validator, balance } = delegation;
+  return res.data.result.map((delegationInfo) => {
+    const { validator_address: validator } = delegationInfo.delegation;
+    const { amount: balance } = delegationInfo.balance;
     return {
       validator,
       balance: Number.parseInt(balance),
@@ -52,7 +61,7 @@ export async function fetchDelegationInfo(endpoint, delegator) {
 
 export function computeTotalGas(msgs) {
   const GAS = {
-    'cosmos-sdk/MsgSend': 44000,
+    'cosmos-sdk/MsgSend': 75000,
     'cosmos-sdk/MsgDelegate': 135000,
     'cosmos-sdk/MsgBeginRedelegate': 245000,
     'cosmos-sdk/MsgUndelegate': 155000,
@@ -90,6 +99,7 @@ export function prepareSignObject({
 export async function sign(cosmosLedgerApp, signObj, path = DEFAULT_PATH) {
   const signMsg = jsonStringify(signObj);
   const res = await cosmosLedgerApp.sign(path, signMsg);
+  console.log(res);
   return sigDerToRaw(res.signature);
 }
 
@@ -206,12 +216,8 @@ export async function pollTxResult(endpoint, txHash) {
       const res = await axios.get(`txs/${txHash}`, {
         baseURL: endpoint,
       });
-      for (let msg of res.data.logs) {
-        if (!msg.success) {
-          return { success: false, log: msg.log };
-        }
-      }
-      return { success: true };
+      const success = res.data.code !== undefined && res.data.code !== '0';
+      return { success, logs: res.logs };
     } catch (err) {
       console.log(err);
     }

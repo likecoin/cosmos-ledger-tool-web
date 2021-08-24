@@ -88,7 +88,7 @@ export default {
       }
       txHash.value = returnedTxHash;
       txResult.value = 'Sent, pending';
-      const { success, log: finalLog } = await Cosmos.pollTxResult(LCD_ENDPOINT, returnedTxHash);
+      const { success, logs: finalLog } = await Cosmos.pollTxResult(LCD_ENDPOINT, returnedTxHash);
       if (success) {
         txResult.value = 'Included, success';
       } else {
