@@ -40,7 +40,6 @@ export async function fetchBasicAccountInfo(endpoint, address) {
   ]);
   const { account_number: accountNumber, sequence = '0' } = authResult.data.result.value;
   const coins = bankResult.data.result;
-  console.log(authResult.data);
   console.log({ address, coins, accountNumber, sequence })
   return { address, coins, accountNumber, sequence };
 }
@@ -216,8 +215,8 @@ export async function pollTxResult(endpoint, txHash) {
       const res = await axios.get(`txs/${txHash}`, {
         baseURL: endpoint,
       });
-      const success = res.data.code !== undefined && res.data.code !== '0';
-      return { success, logs: res.logs };
+      const success = res.data.code === undefined || Number.parseInt(res.data.code) === 0;
+      return { success, log: res.data.raw_log };
     } catch (err) {
       console.log(err);
     }
