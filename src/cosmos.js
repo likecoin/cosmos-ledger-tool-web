@@ -195,11 +195,16 @@ export async function broadcastTx({ signObject, signature, pubKey, endpoint }) {
   });
   console.log(res);
   const log = res.data.raw_log;
-  const passedBasicValidation = (log) => {
-    if (!Array.isArray(log)) {
+  const passedBasicValidation = (rawLog) => {
+    try {
+      const log = JSON.parse(rawLog);
+      if (!Array.isArray(log)) {
+        return false;
+      }
+      return log.every(msg => msg.success);
+    } catch (err) {
       return false;
     }
-    return log.every(msg => msg.success);
   };
   const success = passedBasicValidation(log);
   return { txHash: res.data.txhash, log, success };
