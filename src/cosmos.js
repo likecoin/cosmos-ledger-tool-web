@@ -38,7 +38,7 @@ export async function fetchBasicAccountInfo(endpoint, address) {
       baseURL: endpoint,
     }),
   ]);
-  const { account_number: accountNumber, sequence = '0' } = authResult.data.result.value;
+  const { account_number: accountNumber = '0', sequence = '0' } = authResult.data.result.value;
   const coins = bankResult.data.result;
   console.log({ address, coins, accountNumber, sequence })
   return { address, coins, accountNumber, sequence };
@@ -61,8 +61,8 @@ export async function fetchDelegationInfo(endpoint, delegator) {
 export function computeTotalGas(msgs) {
   const GAS = {
     'cosmos-sdk/MsgSend': 75000,
-    'cosmos-sdk/MsgDelegate': 135000,
-    'cosmos-sdk/MsgBeginRedelegate': 245000,
+    'cosmos-sdk/MsgDelegate': 160000,
+    'cosmos-sdk/MsgBeginRedelegate': 300000,
     'cosmos-sdk/MsgUndelegate': 155000,
     'cosmos-sdk/MsgWithdrawDelegationReward': 90000,
   };
