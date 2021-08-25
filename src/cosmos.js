@@ -63,8 +63,8 @@ export function computeTotalGas(msgs) {
     'cosmos-sdk/MsgSend': 75000,
     'cosmos-sdk/MsgDelegate': 160000,
     'cosmos-sdk/MsgBeginRedelegate': 300000,
-    'cosmos-sdk/MsgUndelegate': 155000,
-    'cosmos-sdk/MsgWithdrawDelegationReward': 90000,
+    'cosmos-sdk/MsgUndelegate': 175000,
+    'cosmos-sdk/MsgWithdrawDelegationReward': 100000,
   };
   return msgs.reduce((sum, msg) => sum + GAS[msg.type], 0);
 }
