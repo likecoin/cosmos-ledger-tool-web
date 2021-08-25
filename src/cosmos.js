@@ -194,7 +194,7 @@ export async function broadcastTx({ signObject, signature, pubKey, endpoint }) {
     baseURL: endpoint,
   });
   console.log(res);
-  const log = JSON.parse(res.data.raw_log);
+  const log = res.data.raw_log;
   const passedBasicValidation = (log) => {
     if (!Array.isArray(log)) {
       return false;
